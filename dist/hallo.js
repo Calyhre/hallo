@@ -24,7 +24,9 @@
         placeholder: '',
         forceStructured: true,
         checkTouch: true,
-        touchScreen: null
+        touchScreen: null,
+        restorable: true,
+        quitOnEscape: true
       },
       _create: function() {
         var options, plugin, _ref,
@@ -223,8 +225,20 @@
           content: this.getContents()
         });
       },
-      restoreOriginalContent: function() {
-        return this.element.html(this.originalContent);
+      restoreOriginalContent: function(event) {
+        var old, widget;
+        if (event) {
+          widget = event.data;
+          old = widget.getContents();
+        }
+        this.element.html(this.originalContent);
+        if (widget) {
+          return widget._trigger("restored", null, {
+            editable: widget,
+            content: widget.getContents(),
+            thrown: old
+          });
+        }
       },
       execute: function(command, value) {
         if (document.execCommand(command, false, value)) {
@@ -307,17 +321,15 @@
         }
       },
       _keys: function(event) {
-        var old, widget;
+        var widget;
         widget = event.data;
         if (event.keyCode === 27) {
-          old = widget.getContents();
-          widget.restoreOriginalContent(event);
-          widget._trigger("restored", null, {
-            editable: widget,
-            content: widget.getContents(),
-            thrown: old
-          });
-          return widget.turnOff();
+          if (widget.options.restorable) {
+            widget.restoreOriginalContent(event);
+          }
+          if (widget.options.quitOnEscape) {
+            return widget.turnOff();
+          }
         }
       },
       _rangesEqual: function(r1, r2) {
