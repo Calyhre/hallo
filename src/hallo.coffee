@@ -278,8 +278,16 @@ http://hallojs.org
         content: @getContents()
 
     # Restore the content original
-    restoreOriginalContent: () ->
+    restoreOriginalContent: (event) ->
+      if event
+        widget = event.data
+        old = widget.getContents()
       @element.html(@originalContent)
+      if widget
+        widget._trigger "restored", null,
+          editable: widget
+          content: widget.getContents()
+          thrown: old
 
     # Execute a contentEditable command
     execute: (command, value) ->
@@ -344,13 +352,7 @@ http://hallojs.org
     _keys: (event) ->
       widget = event.data
       if event.keyCode == 27
-        old = widget.getContents()
         widget.restoreOriginalContent(event)
-        widget._trigger "restored", null,
-          editable: widget
-          content: widget.getContents()
-          thrown: old
-
         widget.turnOff()
 
     _rangesEqual: (r1, r2) ->
