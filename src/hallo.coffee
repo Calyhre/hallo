@@ -104,6 +104,8 @@ http://hallojs.org
       forceStructured: true
       checkTouch: true
       touchScreen: null
+      restorable: true
+      quitOnEscape: true
 
     _create: ->
       @id = @_generateUUID()
@@ -352,8 +354,8 @@ http://hallojs.org
     _keys: (event) ->
       widget = event.data
       if event.keyCode == 27
-        widget.restoreOriginalContent(event)
-        widget.turnOff()
+        widget.restoreOriginalContent(event) if widget.options.restorable
+        widget.turnOff() if widget.options.quitOnEscape
 
     _rangesEqual: (r1, r2) ->
       return false unless r1.startContainer is r2.startContainer
