@@ -413,6 +413,7 @@ http://hallojs.org
 
     turnOff: () ->
       jQuery(@element).removeClass 'inEditMode'
+      jQuery(@element).blur()
       @_trigger "deactivated", null, @
 
       unless @getContents()
